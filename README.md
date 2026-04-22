@@ -13,7 +13,7 @@
 - 脚本使用 `DISCORD_TOKEN` 注入 Discord 登录态，不再使用账号密码登录
 - 续订逻辑保持原来的规则：检测到期时间、判断是否到达可续订窗口、点击 `Renew`
 - `REPO_TOKEN` 需要具备 `repo` 和 `workflow` 权限，脚本运行后会自动更新 workflow 的下一次 cron 时间
-- `GOST_PROXY` 为可选项，如果 GitHub Actions 直连访问不稳定，可以开启代理
+- `Aclclouds_PROXY_NODE` 为可选项，如果 GitHub Actions 直连访问不稳定，可以配置代理节点
 
 ---
 
@@ -25,7 +25,7 @@
 | `REPO_TOKEN` | ✅ | GitHub PAT，用于自动更新 workflow 定时任务 |
 | `TG_BOT_TOKEN` | ❌ | Telegram Bot Token，不配置则跳过通知 |
 | `TG_CHAT_ID` | ❌ | Telegram Chat ID，不配置则跳过通知 |
-| `GOST_PROXY` | ❌ | 可选代理地址，例如 `socks5://127.0.0.1:1080` |
+| `Aclclouds_PROXY_NODE` | ❌ | 可选代理节点，支持 `vless://`、`vmess://`、`trojan://`、`ss://`、`socks5://` |
 
 ---
 
@@ -117,7 +117,7 @@
 | `TG_BOT_TOKEN` | 第二步的 Bot Token，不需要通知可不填 |
 | `TG_CHAT_ID` | 第二步的 Chat ID，不需要通知可不填 |
 | `REPO_TOKEN` | 第四步 4.2 生成的 GitHub PAT |
-| `GOST_PROXY` | 可选代理地址，不用代理可不填 |
+| `Aclclouds_PROXY_NODE` | 可选代理节点，不用代理可不填 |
 
 ### 4.4 确认完成
 
@@ -129,7 +129,7 @@
 可选:
 ☑ TG_BOT_TOKEN
 ☑ TG_CHAT_ID
-☑ GOST_PROXY
+☑ Aclclouds_PROXY_NODE
 ```
 
 ---
@@ -170,8 +170,9 @@
 6. 抓取页面上的到期时间文本
 7. 检测是否出现“到期前 3 天才允许续订”的提示
 8. 如果可以续订，则点击 Renew
-9. 截图并推送 Telegram（如果已配置 TG）
-10. 写入 next_time.txt 并自动更新 workflow 下次执行时间
+9. 如果配置了 `Aclclouds_PROXY_NODE`，workflow 会先启动 Xray 本地 SOCKS5 代理
+10. 截图并推送 Telegram（如果已配置 TG）
+11. 写入 next_time.txt 并自动更新 workflow 下次执行时间
 ```
 
 ---
@@ -246,7 +247,7 @@ A: 先看 Telegram 推送截图（如果已配置 TG）或 Actions 日志，确�
 A: 检查 `next_time.txt` 是否成功写入，以及页面上的剩余时间文案是否仍符合当前解析规则。
 
 ### Q: 代理如何启用？
-A: 在 Secrets 中添加 `GOST_PROXY`，格式例如 `socks5://127.0.0.1:1080`。workflow 会自动启动 gost 并注入 `PROXY_URL`。
+A: 在 Secrets 中添加 `Aclclouds_PROXY_NODE`。支持直接填 `vless://`、`vmess://`、`trojan://`、`ss://` 或 `socks5://` 节点；workflow 会自动启动 Xray，并把本地 `socks5://127.0.0.1:1080` 提供给脚本使用。
 
 ### Q: REPO_TOKEN 需要什么权限？
 A: 需要 `repo` 和 `workflow` 权限，否则 workflow 文件无法被自动提交更新。
@@ -259,7 +260,13 @@ MIT License
 
 ---
 
+## 🤝 贡献
 
+欢迎提交 Issue 和 Pull Request！
+
+⭐ 如果对你有帮助，请点个 Star 支持一下！
+
+---
 
 ## ⚠️ 免责声明
 
