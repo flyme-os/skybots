@@ -13,7 +13,7 @@
 - 脚本使用 `DISCORD_TOKEN` 注入 Discord 登录态，不再使用账号密码登录
 - 续订逻辑保持原来的规则：检测到期时间、判断是否到达可续订窗口、点击 `Renew`
 - `REPO_TOKEN` 需要具备 `repo` 和 `workflow` 权限，脚本运行后会自动更新 workflow 的下一次 cron 时间
-- `Aclclouds_PROXY_NODE` 为可选项，如果 GitHub Actions 直连访问不稳定，可以配置代理节点
+- `Aclclouds_PROXY_NODE` 推荐使用，当多个脚本使用DISCORD_TOKEN登录时，建议使用固定ip
 
 ---
 
