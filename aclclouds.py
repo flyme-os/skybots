@@ -261,7 +261,7 @@ def main():
             expire_time_text = extract_expire_text(page)
             renew_result = renew_if_possible(page)
 
-              if renew_result == "not_needed":
+            if renew_result == "not_needed":
                 screenshot = "renew_not_needed.png"
                 page.screenshot(path=screenshot, full_page=True)
                 send_tg_photo(f"⏰ 暂无需续订。\n⏱️ 当前状态: {expire_time_text}", screenshot)
