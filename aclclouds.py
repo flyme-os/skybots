@@ -198,8 +198,8 @@ def extract_expire_text(page):
 
 def renew_if_possible(page):
     too_early_patterns = [
-        r"Renewal will be available 3 days before Expiration",
-        r"Renewal will be available.*before Expiration",
+        r"Renewal will be available 3 days before expiration",
+        r"Renewal will be available.*before expiration",
     ]
     page_text = page.locator("body").inner_text(timeout=5000)
     for pattern in too_early_patterns:
