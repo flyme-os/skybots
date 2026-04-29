@@ -197,30 +197,25 @@ def extract_expire_text(page):
 
 
 def renew_if_possible(page):
-    page.wait_for_timeout(3000)
-    page_text = page.locator("body").inner_text(timeout=5000)
-    
     too_early_patterns = [
-        r"renewal will be available",
-        r"before expiration",
-        r"renouvellement sera disponible",
-        r"avant expiration",
-        r"3 jours",
+        r"Renewal will be available 3 days before Expiration",
+        r"Renewal will be available.*before Expiration",
     ]
+    page_text = page.locator("body").inner_text(timeout=5000)
     for pattern in too_early_patterns:
         if re.search(pattern, page_text, re.I):
-            print("⏰ 检测到暂不可续订提示，暂无需续订。")
+            print("⏰ 检测到'续期将于到期前 3 天提供'提示，暂无需续订。")
             return "not_needed"
 
     renew_selectors = [
-        'button:has-text(/Renew/i)',
-        'button:has-text(/Renouveler/i)',
-        'button:has-text(/Renouvellement/i)',
-        'button:has-text(/Prolonger/i)',
-        'a:has-text(/Renew/i)',
-        'a:has-text(/Renouveler/i)',
-        'a:has-text(/Renouvellement/i)',
-        'a:has-text(/Prolonger/i)',
+        'button:has-text("Renew")',
+        'button:has-text("Renouveler")',
+        'a:has-text("Renew")',
+        'a:has-text("Renouveler")',
+        'xpath=//button[contains(., "Renew")]',
+        'xpath=//button[contains(., "Renouveler")]',
+        'xpath=//*[contains(text(), "Renew")]',
+        'xpath=//*[contains(text(), "Renouveler")]',
     ]
     selector = click_first_visible(page, renew_selectors, timeout=2500)
     if selector:
@@ -228,8 +223,7 @@ def renew_if_possible(page):
         page.wait_for_timeout(8000)
         return "renewed"
 
-    # 如果没找到按钮，但也没找到"太早"提示，可能是其他状态
-    print("⚠️ 未检测到续订按键，也未找到暂不可续订提示，可能页面状态异常。")
+    print("❌ 未检测到续订按键。")
     return "missing"
 
 
@@ -270,17 +264,11 @@ def main():
                 screenshot = "renew_success.png"
                 page.screenshot(path=screenshot, full_page=True)
                 send_tg_photo(f"🎉 已执行续订。\n⏱️ 当前面板显示状态: {expire_time_text}", screenshot)
-            elif renew_result == "missing":
-                screenshot = "renew_missing.png"
-                page.screenshot(path=screenshot, full_page=True)
-                send_tg_photo(f"⚠️ 未找到续订按钮。\n⏱️ 当前状态: {expire_time_text}\n建议检查页面是否正常。", screenshot)
-                # 正常退出，不报错，让 workflow 继续执行保活提交
             else:
                 screenshot = "renew_error.png"
                 page.screenshot(path=screenshot, full_page=True)
                 send_tg_photo("❌ 未检测到续订按键 (也未找到暂不可续订提示)。", screenshot)
                 sys.exit(1)
-            
         except Exception as exc:
             print(f"❌ 运行报错: {exc}")
             screenshot = "error.png"
