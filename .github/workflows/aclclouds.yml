@@ -2,7 +2,7 @@ name: 🤖 ACLClouds Auto Renew
 on:
   workflow_dispatch:
   schedule:
-    - cron: '55 14 4 6 *' # 下一个: 2026-06-04 14:55 UTC (到期前2天执行)
+    - cron: '38 14 8 6 *' # 下一个: 2026-06-08 14:38 UTC (到期前2天执行)
 
 jobs:
   run_renewal:
